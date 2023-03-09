@@ -4,6 +4,7 @@ import com.amit.order.export.ExportRequest;
 import com.amit.order.export.ExportResponse;
 import com.amit.order.export.Status;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -20,6 +21,7 @@ import java.util.Map;
 /**
  * Interface for the service to connect to outer world
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/gateway")
@@ -31,7 +33,7 @@ public class GatewayController {
     private final Queue exportQueue;
 
     /**
-     * Template to connect to Rabbit to send and recieve messages
+     * Template to connect to Rabbit to send and receive messages
      */
     private final RabbitTemplate rabbitTemplate;
 
@@ -72,6 +74,7 @@ public class GatewayController {
     @RabbitListener(queues = {"${status.queue.name}"})
     public void receive(final ExportResponse response) {
 
+        log.info("Received status message for {}", response.getId());
         tasksResponse.put(response.getId(), response);
     }
 }
